@@ -415,6 +415,7 @@ class ModelBuilder:
         y_train,
         y_test,
         price_scaler,
+        feature_scaler,
         features_df,
         lookback,
         model_key,

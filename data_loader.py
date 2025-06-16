@@ -55,8 +55,14 @@ class DataLoader:
 
     def _filter_data_until_yesterday(self, data: pd.DataFrame) -> pd.DataFrame:
         """Фильтрация данных до вчерашнего дня включительно"""
+        # Конвертируем индекс в UTC и убираем timezone info для корректного сравнения
+        data_copy = data.copy()
+        data_copy.index = pd.to_datetime(data_copy.index).tz_localize(None)
+        # Получаем вчерашнюю дату без timezone
         yesterday = pd.Timestamp.now().normalize() - pd.Timedelta(days=1)
-        return data[data.index <= yesterday]
+        yesterday = pd.Timestamp(yesterday.date())
+
+        return data_copy[data_copy.index <= yesterday]
 
     def _clean_crypto_data(self, data: pd.DataFrame) -> pd.DataFrame:
         """Очистка данных от выбросов и аномалий"""
@@ -440,9 +446,6 @@ class DataLoader:
         """Подготовка признаков для модели с правильным масштабированием"""
         if crypto_name not in self.crypto_data:
             raise ValueError(f"Данные для {crypto_name} не загружены")
-        # Макропоказатели (опционально)
-        if include_macro:
-            features_df = self._process_macro_indicators(features_df)
 
         # Основные данные
         main_data = self.crypto_data[crypto_name].copy()
@@ -494,6 +497,9 @@ class DataLoader:
         for indicator in important_indicators:
             if indicator in tech_indicators.columns:
                 features_df[indicator] = tech_indicators[indicator]
+        # Макропоказатели (опционально)
+        if include_macro:
+            features_df = self._process_macro_indicators(features_df)
 
         # Временные признаки
         features_df["Day_of_Week"] = features_df.index.dayofweek
