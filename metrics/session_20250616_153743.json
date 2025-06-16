@@ -1,0 +1,9 @@
+{
+    "timestamp": "20250616_153743",
+    "parameters": {
+        "data_period": "2y",
+        "forecast_days": 30,
+        "epochs": 50
+    },
+    "results": {}
+}

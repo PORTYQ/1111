@@ -1,0 +1,11 @@
+{
+    "cryptos": [
+        "Bitcoin"
+    ],
+    "models": [
+        "LSTM",
+        "GRU"
+    ],
+    "period": "2y",
+    "epochs": 100
+}

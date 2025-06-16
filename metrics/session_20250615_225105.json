@@ -1,0 +1,64 @@
+{
+    "timestamp": "20250615_225105",
+    "parameters": {
+        "data_period": "2y",
+        "forecast_days": 30,
+        "epochs": 50
+    },
+    "results": {
+        "Bitcoin": {
+            "metrics": {
+                "Bitcoin_GRU": {
+                    "MSE": 1530144771.8840606,
+                    "RMSE": 39117.0649702155,
+                    "MAE": 37910.69941839891,
+                    "R2": -15.466689717685487,
+                    "Adjusted_R2": -15.60056524384553,
+                    "MAPE": 39.78650385394463,
+                    "MPE": 39.78650385394463,
+                    "Directional_Accuracy": 49.193548387096776,
+                    "Max_Error": 55783.58435589892
+                }
+            },
+            "data_info": {
+                "shape": [
+                    683,
+                    20
+                ],
+                "date_range": [
+                    "2023-08-03 00:00:00+00:00",
+                    "2025-06-15 00:00:00+00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Volume",
+                    "High",
+                    "Low",
+                    "Open",
+                    "MA_7",
+                    "MA_21",
+                    "MA_50",
+                    "RSI",
+                    "MACD",
+                    "MACD_Signal",
+                    "Volatility",
+                    "Price_Change",
+                    "Price_Change_7d",
+                    "BB_Upper",
+                    "BB_Lower",
+                    "Macro_DXY",
+                    "Macro_Gold",
+                    "Macro_VIX",
+                    "Macro_TNX"
+                ],
+                "price_stats": {
+                    "min": 25162.654296875,
+                    "max": 111673.28125,
+                    "mean": 65707.96248455801,
+                    "std": 24433.08088784054
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,79 @@
+{
+    "timestamp": "20250615_231402",
+    "parameters": {
+        "data_period": "2y",
+        "forecast_days": 7,
+        "epochs": 50
+    },
+    "results": {
+        "Bitcoin": {
+            "metrics": {
+                "Bitcoin_LSTM": {
+                    "MSE": 313434990.91808957,
+                    "RMSE": 17704.095314872477,
+                    "NRMSE": 18.834997859657918,
+                    "MAE": 15941.575394417476,
+                    "R2": -1.9219200092634812,
+                    "MAPE": 16.446365268022717,
+                    "Directional_Accuracy": 46.07843137254902
+                }
+            },
+            "data_info": {
+                "shape": [
+                    713,
+                    20
+                ],
+                "date_range": [
+                    "2023-07-04 00:00:00+00:00",
+                    "2025-06-15 00:00:00+00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Log_Close",
+                    "Log_Volume",
+                    "Volume",
+                    "HL_Ratio",
+                    "OC_Ratio",
+                    "RSI",
+                    "MACD",
+                    "BB_Width",
+                    "ATR",
+                    "Volume_Ratio",
+                    "Price_Change_3d",
+                    "Macro_DXY_Change",
+                    "Macro_Gold_Change",
+                    "Macro_VIX_Change",
+                    "Macro_TNX_Change",
+                    "Day_Sin",
+                    "Day_Cos",
+                    "Month_Sin",
+                    "Month_Cos"
+                ],
+                "price_stats": {
+                    "min": 25162.654296875,
+                    "max": 111673.28125,
+                    "mean": 64203.67434859309,
+                    "std": 24970.361908719056,
+                    "current": 105558.34375
+                },
+                "correlations": {
+                    "top_positive": {
+                        "Log_Close": 0.9803106445956049,
+                        "ATR": 0.8085910427144417,
+                        "Log_Volume": 0.693591272787581,
+                        "BB_Width": 0.6211314375845834,
+                        "Volume": 0.6190515689033476
+                    },
+                    "top_negative": {
+                        "Macro_DXY_Change": -0.03131808871890246,
+                        "OC_Ratio": -0.02416330282854449,
+                        "Month_Cos": -0.02221057158044255,
+                        "Macro_TNX_Change": -0.012666819614578403,
+                        "Day_Sin": -0.00422909928929895
+                    }
+                }
+            }
+        }
+    }
+}

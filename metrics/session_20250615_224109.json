@@ -1,0 +1,128 @@
+{
+    "timestamp": "20250615_224109",
+    "parameters": {
+        "data_period": "2y",
+        "forecast_days": 7,
+        "epochs": 50
+    },
+    "results": {
+        "Bitcoin": {
+            "metrics": {
+                "Bitcoin_LSTM": {
+                    "MSE": 977910902.438968,
+                    "RMSE": 31271.566996857833,
+                    "MAE": 29875.966688558106,
+                    "R2": -9.523759746453761,
+                    "MAPE": 31.202855581919938,
+                    "Directional_Accuracy": 41.12903225806452
+                },
+                "Bitcoin_GRU": {
+                    "MSE": 533139635.9646794,
+                    "RMSE": 23089.816715701305,
+                    "MAE": 19337.4503820022,
+                    "R2": -4.737366692825341,
+                    "MAPE": 19.540994065630077,
+                    "Directional_Accuracy": 47.58064516129033
+                }
+            },
+            "data_info": {
+                "shape": [
+                    683,
+                    20
+                ],
+                "date_range": [
+                    "2023-08-03 00:00:00+00:00",
+                    "2025-06-15 00:00:00+00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Volume",
+                    "High",
+                    "Low",
+                    "Open",
+                    "MA_7",
+                    "MA_21",
+                    "MA_50",
+                    "RSI",
+                    "MACD",
+                    "MACD_Signal",
+                    "Volatility",
+                    "Price_Change",
+                    "Price_Change_7d",
+                    "BB_Upper",
+                    "BB_Lower",
+                    "Macro_DXY",
+                    "Macro_Gold",
+                    "Macro_VIX",
+                    "Macro_TNX"
+                ],
+                "price_stats": {
+                    "min": 25162.654296875,
+                    "max": 111673.28125,
+                    "mean": 65707.96619063415,
+                    "std": 24433.086874752655
+                }
+            }
+        },
+        "Ethereum": {
+            "metrics": {
+                "Ethereum_LSTM": {
+                    "MSE": 133063.25695182526,
+                    "RMSE": 364.77836689121966,
+                    "MAE": 324.64644604721633,
+                    "R2": 0.17292755258634807,
+                    "MAPE": 16.148333826059883,
+                    "Directional_Accuracy": 57.25806451612904
+                },
+                "Ethereum_GRU": {
+                    "MSE": 103957.37103614,
+                    "RMSE": 322.42420975500585,
+                    "MAE": 274.8143205740264,
+                    "R2": 0.3538390742932285,
+                    "MAPE": 12.869183957138974,
+                    "Directional_Accuracy": 47.58064516129033
+                }
+            },
+            "data_info": {
+                "shape": [
+                    683,
+                    20
+                ],
+                "date_range": [
+                    "2023-08-03 00:00:00+00:00",
+                    "2025-06-15 00:00:00+00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Volume",
+                    "High",
+                    "Low",
+                    "Open",
+                    "MA_7",
+                    "MA_21",
+                    "MA_50",
+                    "RSI",
+                    "MACD",
+                    "MACD_Signal",
+                    "Volatility",
+                    "Price_Change",
+                    "Price_Change_7d",
+                    "BB_Upper",
+                    "BB_Lower",
+                    "Macro_DXY",
+                    "Macro_Gold",
+                    "Macro_VIX",
+                    "Macro_TNX"
+                ],
+                "price_stats": {
+                    "min": 1472.5531005859375,
+                    "max": 4066.445068359375,
+                    "mean": 2633.4894360029853,
+                    "std": 683.7610840476559
+                }
+            }
+        }
+    }
+}

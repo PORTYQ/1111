@@ -1,0 +1,27 @@
+# Основные библиотеки для анализа данных
+numpy
+pandas
+matplotlib
+seaborn
+
+# Машинное обучение
+scikit-learn
+tensorflow
+ta
+statsmodel
+
+# Получение финансовых данных
+yfinance
+
+# Визуализация
+plotly
+
+# Работа с файлами
+openpyxl
+joblib
+
+# Утилиты
+tqdm
+python-dateutil
+
+

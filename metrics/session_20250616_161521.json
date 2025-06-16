@@ -1,0 +1,79 @@
+{
+    "timestamp": "20250616_161521",
+    "parameters": {
+        "data_period": "2y",
+        "forecast_days": 30,
+        "epochs": 50
+    },
+    "results": {
+        "Ethereum": {
+            "metrics": {
+                "Ethereum_GRU": {
+                    "MSE": 114588.25289588212,
+                    "RMSE": 338.5088667906383,
+                    "NRMSE": 16.089486343067158,
+                    "MAE": 259.8272337682039,
+                    "R2": 0.24066283373069552,
+                    "MAPE": 12.292831429296031,
+                    "Directional_Accuracy": 47.05882352941176
+                }
+            },
+            "data_info": {
+                "shape": [
+                    712,
+                    20
+                ],
+                "date_range": [
+                    "2023-07-05 00:00:00+00:00",
+                    "2025-06-16 00:00:00+00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Log_Close",
+                    "Log_Volume",
+                    "Volume",
+                    "HL_Ratio",
+                    "OC_Ratio",
+                    "RSI",
+                    "MACD",
+                    "BB_Width",
+                    "ATR",
+                    "Volume_Ratio",
+                    "Price_Change_3d",
+                    "Macro_DXY_Change",
+                    "Macro_Gold_Change",
+                    "Macro_VIX_Change",
+                    "Macro_TNX_Change",
+                    "Day_Sin",
+                    "Day_Cos",
+                    "Month_Sin",
+                    "Month_Cos"
+                ],
+                "price_stats": {
+                    "min": 1472.5531005859375,
+                    "max": 4066.445068359375,
+                    "mean": 2603.1081681840874,
+                    "std": 685.8902437745513,
+                    "current": 2610.36474609375
+                },
+                "correlations": {
+                    "top_positive": {
+                        "Log_Close": 0.9924048628453009,
+                        "ATR": 0.7149397460588922,
+                        "Log_Volume": 0.5906937750062032,
+                        "BB_Width": 0.5874271094282335,
+                        "Volume": 0.4917208830022057
+                    },
+                    "top_negative": {
+                        "OC_Ratio": -0.058524560476820274,
+                        "Month_Cos": -0.019836585031214746,
+                        "Macro_TNX_Change": -0.01716183013107694,
+                        "Macro_Gold_Change": -0.009587236221360582,
+                        "Macro_VIX_Change": -0.005061876628776757
+                    }
+                }
+            }
+        }
+    }
+}

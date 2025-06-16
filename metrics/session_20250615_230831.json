@@ -1,0 +1,220 @@
+{
+    "timestamp": "20250615_230831",
+    "parameters": {
+        "data_period": "2y",
+        "forecast_days": 7,
+        "epochs": 50
+    },
+    "results": {
+        "Bitcoin": {
+            "metrics": {
+                "Bitcoin_LSTM": {
+                    "MSE": 1871453103.9996073,
+                    "RMSE": 43260.29477476555,
+                    "MAE": 42002.788416080664,
+                    "R2": -16.454512593530875,
+                    "Adjusted_R2": -16.627329549902466,
+                    "MAPE": 44.01335392849106,
+                    "MPE": 44.01335392849106,
+                    "Directional_Accuracy": 49.01960784313725,
+                    "Max_Error": 59682.57383780399
+                }
+            },
+            "data_info": {
+                "shape": [
+                    713,
+                    20
+                ],
+                "date_range": [
+                    "2023-07-04 00:00:00+00:00",
+                    "2025-06-15 00:00:00+00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Log_Close",
+                    "Log_Volume",
+                    "Volume",
+                    "HL_Ratio",
+                    "OC_Ratio",
+                    "RSI",
+                    "MACD",
+                    "BB_Width",
+                    "ATR",
+                    "Volume_Ratio",
+                    "Price_Change_3d",
+                    "Macro_DXY_Change",
+                    "Macro_Gold_Change",
+                    "Macro_VIX_Change",
+                    "Macro_TNX_Change",
+                    "Day_Sin",
+                    "Day_Cos",
+                    "Month_Sin",
+                    "Month_Cos"
+                ],
+                "price_stats": {
+                    "min": 25162.654296875,
+                    "max": 111673.28125,
+                    "mean": 64203.350387337836,
+                    "std": 24969.826119304085,
+                    "current": 105327.359375
+                },
+                "correlations": {
+                    "top_positive": {
+                        "Log_Close": 0.9803118544818651,
+                        "ATR": 0.8086052425783702,
+                        "Log_Volume": 0.6935286319643081,
+                        "BB_Width": 0.6211546502389187,
+                        "Volume": 0.618978448821071
+                    },
+                    "top_negative": {
+                        "Macro_DXY_Change": -0.03131898010982907,
+                        "OC_Ratio": -0.02396322436446279,
+                        "Month_Cos": -0.022192068302335874,
+                        "Macro_TNX_Change": -0.012666793260879234,
+                        "Day_Sin": -0.0042148448507188805
+                    }
+                }
+            }
+        },
+        "Ethereum": {
+            "metrics": {
+                "Ethereum_GRU": {
+                    "MSE": 418220.3073032335,
+                    "RMSE": 646.6995494843285,
+                    "MAE": 530.4820340638806,
+                    "R2": -1.7855510343633525,
+                    "Adjusted_R2": -1.8131307475748706,
+                    "MAPE": 29.37238659178486,
+                    "MPE": -28.9075351776922,
+                    "Directional_Accuracy": 51.9607843137255,
+                    "Max_Error": 1148.3005870494671
+                }
+            },
+            "data_info": {
+                "shape": [
+                    713,
+                    20
+                ],
+                "date_range": [
+                    "2023-07-04 00:00:00+00:00",
+                    "2025-06-15 00:00:00+00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Log_Close",
+                    "Log_Volume",
+                    "Volume",
+                    "HL_Ratio",
+                    "OC_Ratio",
+                    "RSI",
+                    "MACD",
+                    "BB_Width",
+                    "ATR",
+                    "Volume_Ratio",
+                    "Price_Change_3d",
+                    "Macro_DXY_Change",
+                    "Macro_Gold_Change",
+                    "Macro_VIX_Change",
+                    "Macro_TNX_Change",
+                    "Day_Sin",
+                    "Day_Cos",
+                    "Month_Sin",
+                    "Month_Cos"
+                ],
+                "price_stats": {
+                    "min": 1472.5531005859375,
+                    "max": 4066.445068359375,
+                    "mean": 2602.0542000747832,
+                    "std": 685.8686843397372,
+                    "current": 2525.360107421875
+                },
+                "correlations": {
+                    "top_positive": {
+                        "Log_Close": 0.9924144468858875,
+                        "ATR": 0.715341016169733,
+                        "Log_Volume": 0.5914077000845868,
+                        "BB_Width": 0.5878262987511498,
+                        "Volume": 0.492406741530267
+                    },
+                    "top_negative": {
+                        "OC_Ratio": -0.05889324567999522,
+                        "Macro_TNX_Change": -0.018245109075558152,
+                        "Month_Cos": -0.017813880281660546,
+                        "Macro_Gold_Change": -0.009561121863511183,
+                        "Macro_VIX_Change": -0.004967868490321854
+                    }
+                }
+            }
+        },
+        "Solana": {
+            "metrics": {
+                "Solana_GRU": {
+                    "MSE": 1511.8879086173595,
+                    "RMSE": 38.883002824079306,
+                    "MAE": 34.197498284464636,
+                    "R2": -3.1658588502258844,
+                    "Adjusted_R2": -3.2071049774558436,
+                    "MAPE": 22.29017606162024,
+                    "MPE": 22.006009838852474,
+                    "Directional_Accuracy": 50.0,
+                    "Max_Error": 72.79469842022445
+                }
+            },
+            "data_info": {
+                "shape": [
+                    713,
+                    17
+                ],
+                "date_range": [
+                    "2023-07-04 00:00:00+00:00",
+                    "2025-06-15 00:00:00+00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Log_Close",
+                    "Log_Volume",
+                    "High",
+                    "Volume",
+                    "HL_Ratio",
+                    "OC_Ratio",
+                    "RSI",
+                    "MACD",
+                    "BB_Width",
+                    "ATR",
+                    "Volume_Ratio",
+                    "Price_Change_3d",
+                    "Day_Sin",
+                    "Day_Cos",
+                    "Month_Sin",
+                    "Month_Cos"
+                ],
+                "price_stats": {
+                    "min": 17.739166259765625,
+                    "max": 261.8697509765625,
+                    "mean": 128.04994956306788,
+                    "std": 62.78093892136133,
+                    "current": 147.60093688964844
+                },
+                "correlations": {
+                    "top_positive": {
+                        "High": 0.9977764550910986,
+                        "Log_Close": 0.9518728332095441,
+                        "ATR": 0.8435928699621622,
+                        "Log_Volume": 0.7865199810984264,
+                        "BB_Width": 0.7557725844601039
+                    },
+                    "top_negative": {
+                        "RSI": -0.06260541366262483,
+                        "Price_Change_3d": -0.034891235241443455,
+                        "Volume_Ratio": -0.02314770953591119,
+                        "Day_Sin": -0.011025582858536833,
+                        "Day_Cos": 0.00011462220203349443
+                    }
+                }
+            }
+        }
+    }
+}

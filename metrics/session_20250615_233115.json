@@ -1,0 +1,79 @@
+{
+    "timestamp": "20250615_233115",
+    "parameters": {
+        "data_period": "3y",
+        "forecast_days": 7,
+        "epochs": 100
+    },
+    "results": {
+        "Polygon": {
+            "metrics": {
+                "Polygon_LSTM": {
+                    "MSE": 0.008630398470681318,
+                    "RMSE": 0.09289993794767205,
+                    "NRMSE": 22.74571932644091,
+                    "MAE": 0.07836083153198506,
+                    "R2": 0.5084194535829416,
+                    "MAPE": 22.004398043371097,
+                    "Directional_Accuracy": 53.47222222222222
+                }
+            },
+            "data_info": {
+                "shape": [
+                    995,
+                    20
+                ],
+                "date_range": [
+                    "2022-07-04 00:00:00+00:00",
+                    "2025-03-24 00:00:00+00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Log_Close",
+                    "Log_Volume",
+                    "Volume",
+                    "HL_Ratio",
+                    "OC_Ratio",
+                    "RSI",
+                    "MACD",
+                    "BB_Width",
+                    "ATR",
+                    "Volume_Ratio",
+                    "Price_Change_3d",
+                    "Macro_DXY_Change",
+                    "Macro_Gold_Change",
+                    "Macro_VIX_Change",
+                    "Macro_TNX_Change",
+                    "Day_Sin",
+                    "Day_Cos",
+                    "Month_Sin",
+                    "Month_Cos"
+                ],
+                "price_stats": {
+                    "min": 0.20630599558353424,
+                    "max": 1.525588035583496,
+                    "mean": 0.725426711089647,
+                    "std": 0.2557287332273573,
+                    "current": 0.21641500294208527
+                },
+                "correlations": {
+                    "top_positive": {
+                        "Log_Close": 0.9727901240328617,
+                        "Log_Volume": 0.7202800263797716,
+                        "ATR": 0.6695227944869823,
+                        "Volume": 0.6231079790688999,
+                        "BB_Width": 0.5110204847530586
+                    },
+                    "top_negative": {
+                        "OC_Ratio": -0.09085069645691579,
+                        "Macro_VIX_Change": -0.04191685505175929,
+                        "Macro_DXY_Change": -0.02564516164738998,
+                        "Day_Sin": -0.006847004425540829,
+                        "Day_Cos": -0.00288012422923417
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,112 @@
+{
+    "timestamp": "20250615_223820",
+    "parameters": {
+        "data_period": "2y",
+        "forecast_days": 7,
+        "epochs": 50
+    },
+    "results": {
+        "Bitcoin": {
+            "metrics": {
+                "Bitcoin_LSTM": {
+                    "MSE": 742841376.5772111,
+                    "RMSE": 27255.11652107199,
+                    "MAE": 24628.143253357575,
+                    "R2": -6.995256074621438,
+                    "MAPE": 25.303120477728065,
+                    "Directional_Accuracy": 45.16129032258064
+                }
+            },
+            "data_info": {
+                "shape": [
+                    683,
+                    20
+                ],
+                "date_range": [
+                    "2023-08-03 00:00:00+00:00",
+                    "2025-06-15 00:00:00+00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Volume",
+                    "High",
+                    "Low",
+                    "Open",
+                    "MA_7",
+                    "MA_21",
+                    "MA_50",
+                    "RSI",
+                    "MACD",
+                    "MACD_Signal",
+                    "Volatility",
+                    "Price_Change",
+                    "Price_Change_7d",
+                    "BB_Upper",
+                    "BB_Lower",
+                    "Macro_DXY",
+                    "Macro_Gold",
+                    "Macro_VIX",
+                    "Macro_TNX"
+                ],
+                "price_stats": {
+                    "min": 25162.654296875,
+                    "max": 111673.28125,
+                    "mean": 65707.85400176153,
+                    "std": 24432.90581077305
+                }
+            }
+        },
+        "Ethereum": {
+            "metrics": {
+                "Ethereum_GRU": {
+                    "MSE": 101257.449167531,
+                    "RMSE": 318.2097565561606,
+                    "MAE": 287.3964086385445,
+                    "R2": 0.3705975943573846,
+                    "MAPE": 13.609811422838394,
+                    "Directional_Accuracy": 45.16129032258064
+                }
+            },
+            "data_info": {
+                "shape": [
+                    683,
+                    20
+                ],
+                "date_range": [
+                    "2023-08-03 00:00:00+00:00",
+                    "2025-06-15 00:00:00+00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Volume",
+                    "High",
+                    "Low",
+                    "Open",
+                    "MA_7",
+                    "MA_21",
+                    "MA_50",
+                    "RSI",
+                    "MACD",
+                    "MACD_Signal",
+                    "Volatility",
+                    "Price_Change",
+                    "Price_Change_7d",
+                    "BB_Upper",
+                    "BB_Lower",
+                    "Macro_DXY",
+                    "Macro_Gold",
+                    "Macro_VIX",
+                    "Macro_TNX"
+                ],
+                "price_stats": {
+                    "min": 1472.5531005859375,
+                    "max": 4066.445068359375,
+                    "mean": 2633.4878328247964,
+                    "std": 683.7613490136753
+                }
+            }
+        }
+    }
+}
