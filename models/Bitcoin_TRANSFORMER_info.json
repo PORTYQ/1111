@@ -1,0 +1,24 @@
+{
+    "model_name": "Bitcoin_TRANSFORMER",
+    "architecture": "TRANSFORMER",
+    "training_completed": true,
+    "metrics": {
+        "MSE": 247638871.6544535,
+        "RMSE": 15736.545734514086,
+        "NRMSE": 16.536749964903027,
+        "MAE": 11694.901041666666,
+        "R2": -1.9747304100366603,
+        "MAPE": 11.912840014034238,
+        "Directional_Accuracy": 48.734177215189874
+    },
+    "creation_date": "2025-06-17T02:11:56.918908",
+    "config": {
+        "type": "TRANSFORMER",
+        "input_shape": [
+            40,
+            52
+        ],
+        "lookback": 40,
+        "features_count": 52
+    }
+}

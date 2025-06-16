@@ -1,0 +1,24 @@
+{
+    "model_name": "Ethereum_LSTM_ADVANCED",
+    "architecture": "LSTM_ADVANCED",
+    "training_completed": true,
+    "metrics": {
+        "MSE": 345851.03565510246,
+        "RMSE": 588.0910096703592,
+        "NRMSE": 24.727187478849814,
+        "MAE": 498.94754968799134,
+        "R2": -0.2224836796138292,
+        "MAPE": 20.774556426087106,
+        "Directional_Accuracy": 48.734177215189874
+    },
+    "creation_date": "2025-06-17T02:35:51.489575",
+    "config": {
+        "type": "LSTM_ADVANCED",
+        "input_shape": [
+            40,
+            28
+        ],
+        "lookback": 40,
+        "features_count": 28
+    }
+}

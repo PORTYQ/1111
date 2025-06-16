@@ -1,0 +1,24 @@
+{
+    "model_name": "Ethereum_GRU",
+    "architecture": "GRU",
+    "training_completed": true,
+    "metrics": {
+        "MSE": 21545.531788639815,
+        "RMSE": 146.7839629817911,
+        "NRMSE": 6.215855292660179,
+        "MAE": 116.68634737454929,
+        "R2": 0.9211451877177711,
+        "MAPE": 4.9856200451760415,
+        "Directional_Accuracy": 39.35483870967742
+    },
+    "creation_date": "2025-06-17T02:19:21.796728",
+    "config": {
+        "type": "GRU",
+        "input_shape": [
+            40,
+            16
+        ],
+        "lookback": 40,
+        "features_count": 16
+    }
+}

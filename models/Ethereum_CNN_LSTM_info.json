@@ -1,0 +1,24 @@
+{
+    "model_name": "Ethereum_CNN_LSTM",
+    "architecture": "CNN_LSTM",
+    "training_completed": true,
+    "metrics": {
+        "MSE": 164069.49990518673,
+        "RMSE": 405.05493442888303,
+        "NRMSE": 17.031155277259504,
+        "MAE": 353.2817789713542,
+        "R2": 0.42006162978065276,
+        "MAPE": 15.551519166542151,
+        "Directional_Accuracy": 57.59493670886076
+    },
+    "creation_date": "2025-06-17T02:36:14.458104",
+    "config": {
+        "type": "CNN_LSTM",
+        "input_shape": [
+            40,
+            28
+        ],
+        "lookback": 40,
+        "features_count": 28
+    }
+}

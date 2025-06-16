@@ -1,0 +1,24 @@
+{
+    "model_name": "Binance Coin_TRANSFORMER",
+    "architecture": "TRANSFORMER",
+    "training_completed": true,
+    "metrics": {
+        "MSE": 2154.6896193585735,
+        "RMSE": 46.41863439782103,
+        "NRMSE": 7.328306420118781,
+        "MAE": 37.574959113252206,
+        "R2": 0.06907260791519565,
+        "MAPE": 5.965132877061256,
+        "Directional_Accuracy": 51.11940298507462
+    },
+    "creation_date": "2025-06-17T02:07:26.629755",
+    "config": {
+        "type": "TRANSFORMER",
+        "input_shape": [
+            40,
+            53
+        ],
+        "lookback": 40,
+        "features_count": 53
+    }
+}

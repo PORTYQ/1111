@@ -1,0 +1,24 @@
+{
+    "model_name": "Binance Coin_LSTM_ADVANCED",
+    "architecture": "LSTM_ADVANCED",
+    "training_completed": true,
+    "metrics": {
+        "MSE": 7753.850444211742,
+        "RMSE": 88.05595064623255,
+        "NRMSE": 13.901765892551548,
+        "MAE": 71.12736619006303,
+        "R2": -2.350028564575549,
+        "MAPE": 10.838798610107373,
+        "Directional_Accuracy": 55.970149253731336
+    },
+    "creation_date": "2025-06-17T02:06:11.660617",
+    "config": {
+        "type": "LSTM_ADVANCED",
+        "input_shape": [
+            40,
+            53
+        ],
+        "lookback": 40,
+        "features_count": 53
+    }
+}

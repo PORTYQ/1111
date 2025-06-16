@@ -1,0 +1,24 @@
+{
+    "model_name": "Bitcoin_LSTM",
+    "architecture": "LSTM",
+    "training_completed": true,
+    "metrics": {
+        "MSE": 507403063.3012824,
+        "RMSE": 22525.609055057364,
+        "NRMSE": 23.671010535948273,
+        "MAE": 19275.037637578618,
+        "R2": -5.094917226412932,
+        "MAPE": 19.80176521607736,
+        "Directional_Accuracy": 39.87341772151899
+    },
+    "creation_date": "2025-06-17T02:13:12.662123",
+    "config": {
+        "type": "LSTM",
+        "input_shape": [
+            40,
+            52
+        ],
+        "lookback": 40,
+        "features_count": 52
+    }
+}

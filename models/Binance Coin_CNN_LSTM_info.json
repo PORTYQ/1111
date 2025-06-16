@@ -1,0 +1,24 @@
+{
+    "model_name": "Binance Coin_CNN_LSTM",
+    "architecture": "CNN_LSTM",
+    "training_completed": true,
+    "metrics": {
+        "MSE": 5458.915946933832,
+        "RMSE": 73.88447703634256,
+        "NRMSE": 11.664455329990584,
+        "MAE": 63.39273786013011,
+        "R2": -1.358508780305013,
+        "MAPE": 9.827650596598193,
+        "Directional_Accuracy": 49.62686567164179
+    },
+    "creation_date": "2025-06-17T02:08:03.831392",
+    "config": {
+        "type": "CNN_LSTM",
+        "input_shape": [
+            40,
+            53
+        ],
+        "lookback": 40,
+        "features_count": 53
+    }
+}

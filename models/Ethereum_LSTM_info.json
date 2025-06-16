@@ -1,0 +1,24 @@
+{
+    "model_name": "Ethereum_LSTM",
+    "architecture": "LSTM",
+    "training_completed": true,
+    "metrics": {
+        "MSE": 60095.5197804618,
+        "RMSE": 245.14387567398416,
+        "NRMSE": 10.30741538460223,
+        "MAE": 203.5945185055523,
+        "R2": 0.7875827829983938,
+        "MAPE": 8.418248661123274,
+        "Directional_Accuracy": 44.303797468354425
+    },
+    "creation_date": "2025-06-17T02:38:13.033793",
+    "config": {
+        "type": "LSTM",
+        "input_shape": [
+            40,
+            32
+        ],
+        "lookback": 40,
+        "features_count": 32
+    }
+}
