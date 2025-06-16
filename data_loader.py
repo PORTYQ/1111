@@ -41,8 +41,9 @@ class DataLoader:
                 if not data.empty:
                     # Очистка данных
                     data = self._clean_crypto_data(data)
+                    data = self._filter_data_until_yesterday(data)
                     crypto_data[name] = data
-                    logger.info(f"✓ {name}: {len(data)} записей")
+                    logger.info(f"✓ {name}: {len(data)} записей (до вчера)")
                 else:
                     logger.warning(f"✗ Нет данных для {name}")
 
@@ -51,6 +52,11 @@ class DataLoader:
 
         self.crypto_data = crypto_data
         return crypto_data
+
+    def _filter_data_until_yesterday(self, data: pd.DataFrame) -> pd.DataFrame:
+        """Фильтрация данных до вчерашнего дня включительно"""
+        yesterday = pd.Timestamp.now().normalize() - pd.Timedelta(days=1)
+        return data[data.index <= yesterday]
 
     def _clean_crypto_data(self, data: pd.DataFrame) -> pd.DataFrame:
         """Очистка данных от выбросов и аномалий"""
@@ -101,6 +107,8 @@ class DataLoader:
                 data = ticker.history(period=period)
 
                 if not data.empty:
+                    data = self._clean_macro_data(data, name)
+                    data = self._filter_data_until_yesterday(data)
                     macro_data[name] = data["Close"]
                     logger.info(f"✓ {name}: {len(data)} записей")
                 else:
@@ -432,6 +440,9 @@ class DataLoader:
         """Подготовка признаков для модели с правильным масштабированием"""
         if crypto_name not in self.crypto_data:
             raise ValueError(f"Данные для {crypto_name} не загружены")
+        # Макропоказатели (опционально)
+        if include_macro:
+            features_df = self._process_macro_indicators(features_df)
 
         # Основные данные
         main_data = self.crypto_data[crypto_name].copy()
@@ -484,16 +495,6 @@ class DataLoader:
             if indicator in tech_indicators.columns:
                 features_df[indicator] = tech_indicators[indicator]
 
-        # Макропоказатели (опционально)
-        if include_macro and self.macro_data:
-            for macro_name, macro_series in self.macro_data.items():
-                # Ресемплинг и нормализация макропоказателей
-                macro_resampled = macro_series.reindex(
-                    features_df.index, method="ffill"
-                )
-                # Процентное изменение макропоказателя
-                features_df[f"Macro_{macro_name}_Change"] = macro_resampled.pct_change()
-
         # Временные признаки
         features_df["Day_of_Week"] = features_df.index.dayofweek
         features_df["Day_of_Month"] = features_df.index.day
@@ -524,6 +525,43 @@ class DataLoader:
         logger.info(f"Форма данных: {features_df.shape}")
         logger.info(f"Признаки: {list(features_df.columns)}")
 
+        return features_df
+
+    def _process_macro_indicators(self, features_df: pd.DataFrame) -> pd.DataFrame:
+        """Улучшенная обработка макропоказателей"""
+        if not self.macro_data:
+            return features_df
+        for macro_name, macro_series in self.macro_data.items():
+            # Ресемплинг на дневные данные
+            macro_resampled = macro_series.reindex(features_df.index, method="ffill")
+            # Вычисление изменений
+            macro_change = macro_resampled.pct_change()
+            # Обработка выходных и праздничных дней
+            # 1. Находим дни без изменений (выходные/праздники)
+            no_change_mask = (macro_change == 0) | macro_change.isna()
+            # 2. Для таких дней используем интерполяцию
+            if no_change_mask.any():
+                # Линейная интерполяция между торговыми днями
+                macro_change_clean = macro_change.copy()
+                macro_change_clean[no_change_mask] = np.nan
+                macro_change_clean = macro_change_clean.interpolate(
+                    method="linear", limit_direction="both"
+                )
+                # Если остались NaN в начале или конце, заполняем средним
+                if macro_change_clean.isna().any():
+                    mean_change = macro_change_clean.mean()
+                    macro_change_clean = macro_change_clean.fillna(
+                        mean_change if not np.isnan(mean_change) else 0
+                    )
+                features_df[f"Macro_{macro_name}_Change"] = macro_change_clean
+            else:
+                features_df[f"Macro_{macro_name}_Change"] = macro_change
+            # Добавляем сглаженную версию для уменьшения шума
+            features_df[f"Macro_{macro_name}_Change_MA5"] = (
+                features_df[f"Macro_{macro_name}_Change"]
+                .rolling(window=5, min_periods=1)
+                .mean()
+            )
         return features_df
 
     def _remove_highly_correlated_features(
