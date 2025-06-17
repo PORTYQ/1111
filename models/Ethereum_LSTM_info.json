@@ -3,22 +3,22 @@
     "architecture": "LSTM",
     "training_completed": true,
     "metrics": {
-        "MSE": 60095.5197804618,
-        "RMSE": 245.14387567398416,
-        "NRMSE": 10.30741538460223,
-        "MAE": 203.5945185055523,
-        "R2": 0.7875827829983938,
-        "MAPE": 8.418248661123274,
-        "Directional_Accuracy": 44.303797468354425
+        "MSE": 0.7936771937288809,
+        "RMSE": 0.8908856232586094,
+        "NRMSE": -258.39891347072677,
+        "MAE": 0.6886292889967234,
+        "R2": -1.5040764349217661,
+        "MAPE": 2958.0027679703016,
+        "Directional_Accuracy": 47.85714285714286
     },
-    "creation_date": "2025-06-17T02:38:13.033793",
+    "creation_date": "2025-06-17T06:14:38.808733",
     "config": {
         "type": "LSTM",
         "input_shape": [
-            40,
-            32
+            30,
+            30
         ],
-        "lookback": 40,
-        "features_count": 32
+        "lookback": 30,
+        "features_count": 30
     }
 }

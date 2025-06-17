@@ -1,0 +1,24 @@
+{
+    "model_name": "Bitcoin_LSTM_ADVANCED",
+    "architecture": "LSTM_ADVANCED",
+    "training_completed": true,
+    "metrics": {
+        "MSE": 437301434.7900534,
+        "RMSE": 20911.75350825591,
+        "NRMSE": 22.214220072542158,
+        "MAE": 18786.983623798078,
+        "R2": -3.03830481425683,
+        "MAPE": 19.924240054070548,
+        "Directional_Accuracy": 47.57281553398058
+    },
+    "creation_date": "2025-06-17T05:17:08.975614",
+    "config": {
+        "type": "LSTM_ADVANCED",
+        "input_shape": [
+            40,
+            62
+        ],
+        "lookback": 40,
+        "features_count": 62
+    }
+}

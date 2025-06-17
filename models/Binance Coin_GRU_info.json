@@ -1,0 +1,24 @@
+{
+    "model_name": "Binance Coin_GRU",
+    "architecture": "GRU",
+    "training_completed": true,
+    "metrics": {
+        "MSE": 0.5267733232990387,
+        "RMSE": 0.7257915150365418,
+        "NRMSE": 90.53657336555916,
+        "MAE": 0.5484338576944908,
+        "R2": -13.280340630817788,
+        "MAPE": 66.9323454398625,
+        "Directional_Accuracy": 43.57142857142857
+    },
+    "creation_date": "2025-06-17T06:22:02.567300",
+    "config": {
+        "type": "GRU",
+        "input_shape": [
+            30,
+            30
+        ],
+        "lookback": 30,
+        "features_count": 30
+    }
+}

@@ -3,22 +3,22 @@
     "architecture": "GRU",
     "training_completed": true,
     "metrics": {
-        "MSE": 21545.531788639815,
-        "RMSE": 146.7839629817911,
-        "NRMSE": 6.215855292660179,
-        "MAE": 116.68634737454929,
-        "R2": 0.9211451877177711,
-        "MAPE": 4.9856200451760415,
-        "Directional_Accuracy": 39.35483870967742
+        "MSE": 0.8088578028558746,
+        "RMSE": 0.8993652221738812,
+        "NRMSE": -260.8583977066035,
+        "MAE": 0.7341115034255415,
+        "R2": -1.5519717327620217,
+        "MAPE": 1072.7389178157948,
+        "Directional_Accuracy": 50.0
     },
-    "creation_date": "2025-06-17T02:19:21.796728",
+    "creation_date": "2025-06-17T06:15:47.103958",
     "config": {
         "type": "GRU",
         "input_shape": [
-            40,
-            16
+            30,
+            30
         ],
-        "lookback": 40,
-        "features_count": 16
+        "lookback": 30,
+        "features_count": 30
     }
 }

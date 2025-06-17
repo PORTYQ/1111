@@ -1,0 +1,104 @@
+{
+    "timestamp": "20250617_061321",
+    "parameters": {
+        "data_period": "1y",
+        "forecast_days": 30,
+        "epochs": 100
+    },
+    "feature_options": {
+        "use_microstructure": true,
+        "use_sentiment": true,
+        "use_whale": false,
+        "use_regime": false,
+        "use_network": false,
+        "use_cyclical": false,
+        "pca_components": null,
+        "n_features": 30
+    },
+    "results": {
+        "Bitcoin": {
+            "metrics": {
+                "Bitcoin_LSTM": {
+                    "MSE": 0.7860403974792364,
+                    "RMSE": 0.8865891931888389,
+                    "NRMSE": 74.24522139976618,
+                    "MAE": 0.8189636833316286,
+                    "R2": -5.376468291871597,
+                    "MAPE": 76.79279790575633,
+                    "Directional_Accuracy": 47.14285714285714
+                },
+                "Bitcoin_GRU": {
+                    "MSE": 0.52563369510641,
+                    "RMSE": 0.7250059966003108,
+                    "NRMSE": 60.71383584108618,
+                    "MAE": 0.6298852576628664,
+                    "R2": -3.264013148349494,
+                    "MAPE": 53.9344970484566,
+                    "Directional_Accuracy": 55.00000000000001
+                }
+            },
+            "data_info": {
+                "shape": [
+                    713,
+                    22
+                ],
+                "date_range": [
+                    "2023-07-05 00:00:00",
+                    "2025-06-16 00:00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Log_Close",
+                    "Log_Volume",
+                    "Volume",
+                    "HL_Ratio",
+                    "OC_Ratio",
+                    "RSI",
+                    "MACD",
+                    "BB_Width",
+                    "ATR",
+                    "Volume_Ratio",
+                    "Price_Change_3d",
+                    "Macro_DXY_Zscore",
+                    "Macro_DXY_MA5",
+                    "Macro_DXY_Trend",
+                    "Macro_Gold_Zscore",
+                    "Macro_Gold_MA5",
+                    "Macro_Gold_Trend",
+                    "Day_Sin",
+                    "Day_Cos",
+                    "Month_Sin",
+                    "Month_Cos"
+                ],
+                "price_stats": {
+                    "min": 25162.654296875,
+                    "max": 111673.28125,
+                    "mean": 64312.893586189515,
+                    "std": 24994.249208567566,
+                    "current": 108657.21875
+                },
+                "correlations": {
+                    "top_positive": {
+                        "Log_Close": 0.9802489017339349,
+                        "ATR": 0.8072577718145022,
+                        "Log_Volume": 0.6933299510027492,
+                        "BB_Width": 0.6189838181058346,
+                        "Volume": 0.6187688175935566
+                    },
+                    "top_negative": {
+                        "Macro_DXY_MA5": -0.12898235537584657,
+                        "Macro_DXY_Zscore": -0.12778614465591698,
+                        "Month_Cos": -0.028211013085168695,
+                        "OC_Ratio": -0.025771734238871653,
+                        "Macro_DXY_Trend": -0.004050634409306605
+                    }
+                }
+            },
+            "models_used": [
+                "LSTM",
+                "GRU"
+            ]
+        }
+    }
+}

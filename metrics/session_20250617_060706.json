@@ -1,0 +1,19 @@
+{
+    "timestamp": "20250617_060706",
+    "parameters": {
+        "data_period": "1y",
+        "forecast_days": 30,
+        "epochs": 100
+    },
+    "feature_options": {
+        "use_microstructure": true,
+        "use_sentiment": true,
+        "use_whale": false,
+        "use_regime": false,
+        "use_network": false,
+        "use_cyclical": false,
+        "pca_components": null,
+        "n_features": 30
+    },
+    "results": {}
+}

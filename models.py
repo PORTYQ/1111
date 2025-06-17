@@ -32,6 +32,11 @@ import joblib
 import logging
 from typing import Dict, Tuple, List, Optional
 from config import MODEL_CONFIG, LSTM_CONFIG, GRU_CONFIG, DIRS
+import shap
+from tensorflow.keras.callbacks import LambdaCallback
+from tensorflow.keras.layers import GaussianNoise
+from tensorflow.keras.regularizers import l1, l1_l2
+from data_preprocessing import DataPreprocessor
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -52,6 +57,9 @@ class ModelBuilder:
         self.metrics = {}
         self.predictions = {}
         self.model_configs = {}
+        self.overfitting_history = {}
+        self.shap_values = {}
+        self.preprocessor = DataPreprocessor()
 
     def build_model(self, model_type: str, input_shape: Tuple[int, int]) -> Model:
         """Универсальный метод создания модели по типу"""
@@ -73,32 +81,40 @@ class ModelBuilder:
     def build_lstm_model(self, input_shape: Tuple[int, int]) -> Sequential:
         """Создание базовой LSTM модели"""
         model = Sequential()
+        model.add(GaussianNoise(0.01, input_shape=input_shape))
 
         model.add(
             LSTM(
                 units=50,
                 return_sequences=True,
-                input_shape=input_shape,
-                kernel_regularizer=l2(0.001),
+                kernel_regularizer=l1_l2(l1=0.001, l2=0.001),
+                recurrent_regularizer=l2(0.001),
+                dropout=0.1,
+                recurrent_dropout=0.1,
             )
         )
         model.add(Dropout(0.2))
+        model.add(BatchNormalization())
 
-        model.add(LSTM(units=30, return_sequences=False, kernel_regularizer=l2(0.001)))
+        model.add(
+            LSTM(
+                units=30,
+                return_sequences=False,
+                kernel_regularizer=l1_l2(l1=0.001, l2=0.001),
+                dropout=0.1,
+                recurrent_dropout=0.1,
+            )
+        )
         model.add(Dropout(0.2))
-
-        model.add(Dense(20))
+        model.add(BatchNormalization())
+        model.add(Dense(20, kernel_regularizer=l2(0.001)))
         model.add(LeakyReLU(alpha=0.01))
         model.add(Dropout(0.1))
-
-        model.add(Dense(10))
+        model.add(Dense(10, kernel_regularizer=l2(0.001)))
         model.add(LeakyReLU(alpha=0.01))
-
         model.add(Dense(1))
-
-        optimizer = Adam(learning_rate=0.0001)
-        model.compile(optimizer=optimizer, loss="mse", metrics=["mae"])
-
+        optimizer = Adam(learning_rate=0.00005, clipnorm=1.0)
+        model.compile(optimizer=optimizer, loss="huber", metrics=["mae"])
         return model
 
     def build_gru_model(self, input_shape: Tuple[int, int]) -> Sequential:
@@ -270,37 +286,25 @@ class ModelBuilder:
 
         return model
 
-    def prepare_data(
-        self, features_df: pd.DataFrame, lookback: int = None
-    ) -> Tuple[np.ndarray, np.ndarray, MinMaxScaler, RobustScaler]:
-        """Подготовка данных с правильной нормализацией"""
+    def prepare_data(self, features_df: pd.DataFrame, lookback: int = None) -> Tuple[np.ndarray, np.ndarray, DataPreprocessor]:
+        """НОВАЯ версия подготовки данных с правильной предобработкой"""
         if lookback is None:
             lookback = MODEL_CONFIG["lookback_window"]
-
-        # Отдельная нормализация для целевой переменной (цены)
-        price_scaler = MinMaxScaler(feature_range=(0, 1))
-        price_scaled = price_scaler.fit_transform(features_df[["Close"]].values)
-
-        # Робастная нормализация для остальных признаков
-        feature_scaler = RobustScaler()
-        feature_cols = [col for col in features_df.columns if col != "Close"]
-        features_scaled = feature_scaler.fit_transform(features_df[feature_cols].values)
-
-        # Объединение
-        scaled_data = np.column_stack([price_scaled, features_scaled])
-
+        # Используем новый препроцессор
+        logger.info("Применение улучшенной предобработки данных...")
+        X_processed, y = self.preprocessor.fit_transform(features_df)
+        # Добавляем целевую переменную обратно для создания последовательностей
+        data_combined = pd.concat([pd.Series(y, index=X_processed.index, name='Close'), X_processed], axis=1)
         # Создание последовательностей
         X, y = [], []
-        for i in range(lookback, len(scaled_data)):
-            X.append(scaled_data[i - lookback : i])
-            y.append(price_scaled[i, 0])  # Только цена закрытия
+        for i in range(lookback, len(data_combined)):
+            X.append(data_combined.iloc[i-lookback:i].values)
+            y.append(data_combined.iloc[i, 0])  # Close price    
 
-        return np.array(X), np.array(y), price_scaler, feature_scaler
+        return np.array(X), np.array(y), self.preprocessor
 
-    def train_model(
-        self, crypto_name: str, model_type: str, features_df: pd.DataFrame, **kwargs
-    ) -> Dict:
-        """Обучение модели с поддержкой новых типов"""
+    def train_model(self, crypto_name: str, model_type: str, features_df: pd.DataFrame, **kwargs) -> Dict:
+        """Обучение модели с ПРАВИЛЬНОЙ валидацией временных рядов"""
         logger.info(f"Обучение модели {model_type} для {crypto_name}")
 
         # Параметры
@@ -309,67 +313,83 @@ class ModelBuilder:
         lookback = kwargs.get("lookback", MODEL_CONFIG.get("lookback_window", 40))
 
         # Подготовка данных
-        X, y, price_scaler, feature_scaler = self.prepare_data(features_df, lookback)
-        X_train, X_test, y_train, y_test = self.split_data(X, y)
+        X, y, preprocessor = self.prepare_data(features_df, lookback)
 
         # Сохранение скейлеров
         model_key = f"{crypto_name}_{model_type}"
-        self.scalers[model_key] = price_scaler
-        self.feature_scalers[model_key] = feature_scaler
-
+        self.scalers[model_key] = preprocessor
+        # ПРАВИЛЬНАЯ валидация временных рядов
+        splits = preprocessor.get_time_series_splits(X, y, n_splits=5, gap=5)
+        # Используем последний сплит для финального обучения
+        train_idx, test_idx = splits[-1]
+        X_train, X_test = X[train_idx], X[test_idx]
+        y_train, y_test = y[train_idx], y[test_idx]
+        logger.info(f"Размер обучающей выборки: {X_train.shape}")
+        logger.info(f"Размер тестовой выборки: {X_test.shape}")
+        logger.info(f"Количество признаков после отбора: {X_train.shape[2]}")
         # Создание модели
         input_shape = (X_train.shape[1], X_train.shape[2])
         model = self.build_model(model_type, input_shape)
-
-        # Сохранение конфигурации модели
+        # Сохранение конфигурации
         self.model_configs[model_key] = {
             "type": model_type,
             "input_shape": input_shape,
             "lookback": lookback,
-            "features_count": features_df.shape[1],
+            "features_count": X_train.shape[2],
+            "selected_features": preprocessor.selected_features
         }
-
-        # Callbacks с адаптивными параметрами
+        # Callbacks
         callbacks = self._create_callbacks(model_key, model_type)
-
-        # Обучение
+        # КРОСС-ВАЛИДАЦИЯ для оценки переобучения
+        cv_scores = []
+        for fold, (train_idx, val_idx) in enumerate(splits[:-1]):  # Используем все кроме последнего
+            logger.info(f"Кросс-валидация Fold {fold+1}/{len(splits)-1}")
+            X_cv_train, X_cv_val = X[train_idx], X[val_idx]
+            y_cv_train, y_cv_val = y[train_idx], y[val_idx]
+            # Клонируем модель для CV
+            cv_model = self.build_model(model_type, input_shape)
+            history = cv_model.fit(
+                X_cv_train, y_cv_train,
+                validation_data=(X_cv_val, y_cv_val),
+                epochs=min(50, epochs),  # Меньше эпох для CV
+                batch_size=batch_size,
+                verbose=0,
+                callbacks=[EarlyStopping(patience=10, restore_best_weights=True)]
+            )
+            val_loss = min(history.history['val_loss'])
+            cv_scores.append(val_loss)
+            logger.info(f"Fold {fold+1} val_loss: {val_loss:.4f}")
+        avg_cv_score = np.mean(cv_scores)
+        std_cv_score = np.std(cv_scores)
+        logger.info(f"CV Score: {avg_cv_score:.4f} (+/- {std_cv_score:.4f})")
+        # Финальное обучение на последнем сплите
+        logger.info("Финальное обучение модели...")
         history = model.fit(
-            X_train,
-            y_train,
+            X_train, y_train,
             epochs=epochs,
-            batch_size=batch_size,
+            batch_size=batch_size
             validation_data=(X_test, y_test),
             callbacks=callbacks,
             verbose=1,
-            shuffle=False,
+            shuffle=False  # Важно для временных рядов!
         )
-
         # Сохранение результатов
         self.models[model_key] = model
         self.history[model_key] = history
-
-        # Предсказания и метрики
+        # Оценка модели
         results = self._evaluate_model(
-            model,
-            X_train,
-            X_test,
-            y_train,
-            y_test,
-            price_scaler,
-            feature_scaler,
-            features_df,
-            lookback,
-            model_key,
+            model, X_train, X_test, y_train, y_test,
+            preprocessor, features_df, lookback, model_key
         )
-
-        # Сохранение артефактов
-        self._save_model_artifacts(
-            model_key, model, price_scaler, feature_scaler, results["metrics"]
-        )
-
+        # Добавляем CV результаты   
+        results['cv_scores'] = cv_scores
+        results['cv_mean'] = avg_cv_score
+        results['cv_std'] = std_cv_score
+        # Сохранение
+        self._save_model_artifacts(model_key, model, preprocessor, results["metrics"])
         logger.info(f"Модель {model_key} обучена. Метрики: {results['metrics']}")
-
-        return results
+        return results             
+                     
 
     def _create_callbacks(self, model_key: str, model_type: str) -> List:
         """Создание callbacks с адаптивными параметрами"""
@@ -404,64 +424,143 @@ class ModelBuilder:
                 min_lr=1e-7,
                 verbose=1,
             ),
+            LambdaCallback(
+                on_epoch_end=lambda epoch, logs: self.check_overfitting(
+                    epoch, logs, model_key
+                )
+            ),
         ]
 
         return callbacks
 
-    def _evaluate_model(
-        self,
-        model,
-        X_train,
-        X_test,
-        y_train,
-        y_test,
-        price_scaler,
-        feature_scaler,
-        features_df,
-        lookback,
-        model_key,
+    def check_overfitting(self, epoch, logs, model_key):
+        """Проверка на переобучение"""
+        train_loss = logs.get("loss")
+        val_loss = logs.get("val_loss")
+        if val_loss and train_loss:
+            overfitting_ratio = val_loss / train_loss
+            if overfitting_ratio > 1.5:
+                logger.warning(
+                    f"⚠️ Модель {model_key} - возможное переобучение на эпохе {epoch}: "
+                    f"train_loss={train_loss:.4f}, val_loss={val_loss:.4f}, "
+                    f"ratio={overfitting_ratio:.2f}"
+                )
+            if model_key not in self.overfitting_history:
+                self.overfitting_history[model_key] = []
+            self.overfitting_history[model_key].append(
+                {
+                    "epoch": epoch,
+                    "train_loss": train_loss,
+                    "val_loss": val_loss,
+                    "overfitting_ratio": overfitting_ratio,
+                }
+            )
+
+    def calculate_shap_values(
+        self, model_key: str, X_test: np.ndarray, feature_names: List[str] = None
     ) -> Dict:
-        """Оценка модели и создание предсказаний"""
+        """Расчет SHAP значений для интерпретации модели"""
+        if model_key not in self.models:
+            logger.error(f"Модель {model_key} не найдена")
+            return {}
+        model = self.models[model_key]
+        try:
+            background = X_test[:100]
+            explainer = shap.DeepExplainer(model, background)
+            shap_values = explainer.shap_values(X_test[:100])
+            self.shap_values[model_key] = {
+                "values": shap_values,
+                "expected_value": explainer.expected_value,
+                "feature_names": feature_names,
+                "data": X_test[:100],
+            }
+            # Анализ важности признаков
+            if isinstance(shap_values, list):
+                shap_values = shap_values[0]
+            # Средняя важность по всем примерам
+            mean_shap = np.abs(shap_values).mean(axis=0)
+            # Важность по временным шагам
+            time_importance = mean_shap.mean(axis=1)
+            feature_importance = mean_shap.mean(axis=0)
+            result = {
+                "time_importance": time_importance.tolist(),
+                "feature_importance": feature_importance.tolist(),
+                "top_features": self._get_top_features(
+                    feature_importance, feature_names
+                ),
+                "model_key": model_key,
+            }
+            logger.info(f"SHAP анализ выполнен для {model_key}")
+            return result
+        except Exception as e:
+            logger.error(f"Ошибка при расчете SHAP для {model_key}: {e}")
+            return {}
+
+    def _get_top_features(
+        self,
+        importance_values: np.ndarray,
+        feature_names: List[str] = None,
+        top_n: int = 10,
+    ) -> List[Dict]:
+        """Получение топ важных признаков"""
+        indices = np.argsort(importance_values)[-top_n:][::-1]
+        top_features = []
+        for idx in indices:
+            feature_info = {
+                "index": int(idx),
+                "importance": float(importance_values[idx]),
+            }
+            if feature_names and idx < len(feature_names):
+                feature_info["name"] = feature_names[idx]
+            top_features.append(feature_info)
+        return top_features
+    def _evaluate_model(self, model, X_train, X_test, y_train, y_test,
+                   preprocessor, features_df, lookback, model_key) -> Dict:
+        """Оценка модели с SHAP на отобранных признаках"""
         # Предсказания
         train_pred = model.predict(X_train, verbose=0)
         test_pred = model.predict(X_test, verbose=0)
-
-        # Обратное масштабирование только для цен
-        train_pred_rescaled = price_scaler.inverse_transform(train_pred)
-        test_pred_rescaled = price_scaler.inverse_transform(test_pred)
-        y_train_rescaled = price_scaler.inverse_transform(y_train.reshape(-1, 1))
-        y_test_rescaled = price_scaler.inverse_transform(y_test.reshape(-1, 1))
-
+        # Обратное масштабирование для цен
+        # Так как y уже в исходном масштабе, просто используем его
+        train_pred_rescaled = train_pred.flatten()
+        test_pred_rescaled = test_pred.flatten()
+        y_train_rescaled = y_train
+        y_test_rescaled = y_test
         # Создание индексов дат
         original_dates = features_df.index[lookback:]
-        train_dates = original_dates[: len(train_pred)]
-        test_dates = original_dates[len(train_pred) : len(train_pred) + len(test_pred)]
-
+        train_dates = original_dates[:len(train_pred)]
+        test_dates = original_dates[len(train_pred):len(train_pred) + len(test_pred)]
         # Сохранение предсказаний
         predictions = {
-            "train_pred": train_pred_rescaled.flatten(),
-            "test_pred": test_pred_rescaled.flatten(),
-            "y_train": y_train_rescaled.flatten(),
-            "y_test": y_test_rescaled.flatten(),
+            "train_pred": train_pred_rescaled,
+            "test_pred": test_pred_rescaled,
+            "y_train": y_train_rescaled,
+            "y_test": y_test_rescaled,
             "train_dates": train_dates,
             "test_dates": test_dates,
         }
         self.predictions[model_key] = predictions
-
         # Расчет метрик
-        metrics = self._calculate_metrics(
-            y_test_rescaled.flatten(), test_pred_rescaled.flatten()
-        )
+        metrics = self._calculate_metrics(y_test_rescaled, test_pred_rescaled)
         self.metrics[model_key] = metrics
-
+        # SHAP анализ на ОТОБРАННЫХ признаках
+        logger.info("Выполнение SHAP анализа...")
+        feature_names = preprocessor.selected_features
+        shap_analysis = self.calculate_shap_values(model_key, X_test[:100], feature_names)
+        # Анализ переобучения
+        overfitting_analysis = self.analyze_overfitting(model_key)
         return {
             "model": model,
-            "scaler": price_scaler,
-            "feature_scaler": feature_scaler,
+            "preprocessor": preprocessor,
             "history": self.history[model_key],
             "metrics": metrics,
             "predictions": predictions,
-        }
+            "shap_analysis": shap_analysis,
+            "overfitting_analysis": overfitting_analysis,
+            "selected_features": feature_names
+        }        
+
+
 
     def _save_model_artifacts(
         self, model_key, model, price_scaler, feature_scaler, metrics
@@ -529,63 +628,46 @@ class ModelBuilder:
             "Directional_Accuracy": float(directional_accuracy),
         }
 
-    def create_forecast(
-        self,
-        crypto_name: str,
-        model_type: str,
-        features_df: pd.DataFrame,
-        days_ahead: int = 30,
-    ) -> Tuple[pd.DatetimeIndex, np.ndarray]:
-        """Создание прогноза на будущее с учетом типа модели"""
+    def create_forecast(self, crypto_name: str, model_type: str, 
+                   features_df: pd.DataFrame, days_ahead: int = 30) -> Tuple[pd.DatetimeIndex, np.ndarray]:
+        """Создание прогноза с использованием препроцессора"""
         model_key = f"{crypto_name}_{model_type}"
-
         if model_key not in self.models:
             raise ValueError(f"Модель {model_key} не обучена")
-
         model = self.models[model_key]
-        price_scaler = self.scalers[model_key]
-        feature_scaler = self.feature_scalers[model_key]
-
-        # Получаем конфигурацию модели
+        preprocessor = self.scalers[model_key]  # Теперь это полный препроцессор
+        # Получаем конфигурацию
         model_config = self.model_configs.get(model_key, {})
         lookback = model_config.get("lookback", 40)
-
-        # Нормализация
-        price_scaled = price_scaler.transform(features_df[["Close"]].values)
-        feature_cols = [col for col in features_df.columns if col != "Close"]
-        features_scaled = feature_scaler.transform(features_df[feature_cols].values)
-        scaled_data = np.column_stack([price_scaled, features_scaled])
-
+        # Применяем препроцессинг
+        X_processed, y = preprocessor.transform(features_df)
+        # Добавляем целевую переменную обратно
+        data_combined = pd.concat([pd.Series(y, index=X_processed.index, name='Close'), X_processed], axis=1)
         # Последняя последовательность
-        last_sequence = scaled_data[-lookback:].reshape(1, lookback, -1)
-
+        last_sequence = data_combined.iloc[-lookback:].values.reshape(1, lookback, -1)
         # Прогноз
         forecast = []
         current_sequence = last_sequence.copy()
-
         for _ in range(days_ahead):
             pred = model.predict(current_sequence, verbose=0)
             forecast.append(pred[0, 0])
-
             # Обновление последовательности
             new_row = current_sequence[0, -1, :].copy()
-            new_row[0] = pred[0, 0]
-
+            new_row[0] = pred[0, 0]  # Обновляем предсказанную цену
             current_sequence = np.append(
                 current_sequence[0, 1:, :], [new_row], axis=0
             ).reshape(1, lookback, -1)
-
-        # Обратное преобразование
-        forecast_array = np.array(forecast).reshape(-1, 1)
-        forecast_rescaled = price_scaler.inverse_transform(forecast_array).flatten()
-
         # Даты прогноза
         last_date = features_df.index[-1]
         forecast_dates = pd.date_range(
-            start=last_date + pd.Timedelta(days=1), periods=days_ahead, freq="D"
+            start=last_date + pd.Timedelta(days=1),
+            periods=days_ahead,
+            freq='D'
         )
-
-        return forecast_dates, forecast_rescaled
+        return forecast_dates, np.array(forecast)        
+        
+    
+    
 
     def ensemble_predict(
         self,
@@ -755,3 +837,104 @@ class ModelBuilder:
             json.dump(info, f, indent=4, default=str)
 
         logger.info(f"Артефакты модели {model_key} сохранены")
+
+    def analyze_overfitting(self, model_key: str) -> Dict:
+        """Анализ переобучения для модели"""
+        if model_key not in self.overfitting_history:
+            return {"status": "No overfitting data available"}
+        history = self.overfitting_history[model_key]
+        # Находим эпоху с минимальной val_loss
+        best_epoch = min(history, key=lambda x: x["val_loss"])
+        # Находим точку начала переобучения
+        overfitting_start = None
+        for i in range(1, len(history)):
+            if history[i]["val_loss"] > history[i - 1]["val_loss"] * 1.02:
+                overfitting_start = history[i]["epoch"]
+                break
+        # Средний коэффициент переобучения
+        avg_overfit_ratio = np.mean([h["overfitting_ratio"] for h in history])
+        return {
+            "best_epoch": best_epoch["epoch"],
+            "best_val_loss": best_epoch["val_loss"],
+            "overfitting_start_epoch": overfitting_start,
+            "average_overfit_ratio": avg_overfit_ratio,
+            "final_overfit_ratio": history[-1]["overfitting_ratio"],
+            "recommendation": self._get_overfitting_recommendation(avg_overfit_ratio),
+        }
+
+    def _get_overfitting_recommendation(self, avg_ratio: float) -> str:
+        """Получение рекомендаций по переобучению"""
+        if avg_ratio < 1.2:
+            return "Модель хорошо генерализуется"
+        elif avg_ratio < 1.5:
+            return "Умеренное переобучение - рекомендуется увеличить регуляризацию"
+        elif avg_ratio < 2.0:
+            return "Значительное переобучение - требуется больше dropout или меньше параметров"
+        else:
+            return "Сильное переобучение - необходимо упростить модель или увеличить данные"
+    def post_training_analysis(self, model_key: str) -> Dict:
+        """Полный пост-анализ после обучения"""
+        if model_key not in self.models:
+            raise ValueError(f"Модель {model_key} не найдена")
+        analysis = {
+            "model_key": model_key,
+            "timestamp": pd.Timestamp.now()
+        }
+        # 1. Метрики производительности
+        if model_key in self.metrics:
+            analysis["metrics"] = self.metrics[model_key]
+        # 2. Анализ переобучения
+        if model_key in self.overfitting_history:
+            overfit_data = self.analyze_overfitting(model_key)
+            analysis["overfitting"] = overfit_data
+            # Проверка на переобучение
+            if overfit_data["average_overfit_ratio"] > 1.5:
+                analysis["warnings"] = analysis.get("warnings", [])
+                analysis["warnings"].append("Высокий риск переобучения!")
+        # 3. SHAP анализ
+        if model_key in self.shap_values:
+            shap_data = self.shap_values[model_key]
+            top_features = shap_data.get("top_features", [])[:5]
+            analysis["top_features"] = top_features
+        # 4. Сравнение train vs test
+        if model_key in self.predictions:
+            pred = self.predictions[model_key]
+            train_rmse = np.sqrt(np.mean((pred["y_train"] - pred["train_pred"])**2))
+            test_rmse = np.sqrt(np.mean((pred["y_test"] - pred["test_pred"])**2))
+            analysis["train_test_gap"] = {
+                "train_rmse": train_rmse,
+                "test_rmse": test_rmse,
+                "gap_ratio": test_rmse / train_rmse
+            }
+            if test_rmse > train_rmse * 1.3:
+                analysis["warnings"] = analysis.get("warnings", [])
+                analysis["warnings"].append("Большой разрыв между train и test!")
+        # 5. Рекомендации
+        analysis["recommendations"] = self._generate_recommendations(analysis)
+        return analysis
+    def _generate_recommendations(self, analysis: Dict) -> List[str]:
+        """Генерация рекомендаций на основе анализа"""
+        recommendations = []
+        # На основе метрик
+        if "metrics" in analysis:
+            if analysis["metrics"]["R2"] < 0.5:
+                 recommendations.append("Низкий R2 - попробуйте добавить больше данных или изменить архитектуру")
+            if analysis["metrics"]["MAPE"] > 10:
+                recommendations.append("Высокий MAPE - модель плохо предсказывает масштаб изменений")
+        # На основе переобучения
+        if "overfitting" in analysis:
+            ratio = analysis["overfitting"]["average_overfit_ratio"]
+            if ratio > 2.0:
+                recommendations.append("Сильное переобучение - увеличьте dropout или упростите модель")
+            elif ratio > 1.5:
+                recommendations.append("Умеренное переобучение - добавьте регуляризацию")
+        # На основе train/test gap
+        if "train_test_gap" in analysis:
+            if analysis["train_test_gap"]["gap_ratio"] > 1.5:
+                recommendations.append("Используйте больше данных для обучения или примените data augmentation")
+        if not recommendations:
+            recommendations.append("Модель показывает хорошие результаты!")
+        return recommendations            
+                             
+         
+

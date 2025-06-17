@@ -1036,3 +1036,124 @@ class Visualizer:
             logger.info(f"Сводная панель сохранена: {file_path}")
 
         return fig
+
+    def plot_overfitting_history(self, model_key: str):
+        """Визуализация истории переобучения"""
+        if (
+            not hasattr(self, "overfitting_history")
+            or model_key not in self.overfitting_history
+        ):
+            logger.warning(f"Нет данных о переобучении для {model_key}")
+            return
+        import matplotlib.pyplot as plt
+
+        history = self.overfitting_history[model_key]
+        epochs = [h["epoch"] for h in history]
+        train_losses = [h["train_loss"] for h in history]
+        val_losses = [h["val_loss"] for h in history]
+        overfit_ratios = [h["overfitting_ratio"] for h in history]
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
+        ax1.plot(epochs, train_losses, label="Train Loss", color="blue")
+        ax1.plot(epochs, val_losses, label="Validation Loss", color="red")
+        ax1.set_xlabel("Epoch")
+        ax1.set_ylabel("Loss")
+        ax1.set_title(f"Training History - {model_key}")
+        ax1.legend()
+        ax1.grid(True, alpha=0.3)
+        # График коэффициента переобучения
+        ax2.plot(epochs, overfit_ratios, label="Overfitting Ratio", color="orange")
+        ax2.axhline(y=1.5, color="red", linestyle="--", label="Warning Threshold")
+        ax2.set_xlabel("Epoch")
+        ax2.set_ylabel("Val Loss / Train Loss")
+        ax2.set_title("Overfitting Ratio")
+        ax2.legend()
+        ax2.grid(True, alpha=0.3)
+
+        plt.tight_layout()
+        save_path = DIRS["plots"] / f"{model_key}_overfitting_analysis.png"
+        plt.savefig(save_path, dpi=300)
+        plt.close()
+        logger.info(f"График переобучения сохранен: {save_path}")
+
+    def plot_shap_summary(self, model_key: str, shap_data: Dict, 
+                          crypto_name: str, save_plot: bool = True) -> go.Figure:
+        """Визуализация SHAP значений"""
+        if not shap_data or 'feature_importance' not in shap_data:
+            logger.warning("Нет данных SHAP для визуализации")
+            return None
+        feature_importance = shap_data['feature_importance']
+        feature_names = shap_data.get('top_features', [])
+        # Создаем график важности признаков
+        fig = go.Figure()
+        # Берем топ-20 признаков
+        top_n = 20
+        if feature_names:
+            names = [f['name'] if 'name' in f else f"Feature {f['index']}" 
+                     for f in feature_names[:top_n]]
+            values = [f['importance'] for f in feature_names[:top_n]]
+        else:
+            names = [f"Feature {i}" for i in range(min(top_n, len(feature_importance)))]
+            values = feature_importance[:top_n]
+        fig.add_trace(go.Bar(
+            x=values,
+            y=names,
+            orientation='h',
+            marker_color='lightblue',
+            text=[f"{v:.4f}" for v in values],
+            textposition='auto',
+        ))         
+        fig.update_layout(
+            title=f"{crypto_name} - SHAP Feature Importance ({model_key})",
+            xaxis_title="Mean |SHAP value|",
+            yaxis_title="Features",
+            height=600,
+            template="plotly_white"
+        )
+        if save_plot:
+            file_path = DIRS["plots"] / f"{crypto_name}_{model_key}_shap_importance.html"
+            fig.write_html(str(file_path))
+            logger.info(f"SHAP график сохранен: {file_path}")
+        return fig
+    def plot_overfitting_analysis(self, overfitting_history: List[Dict], 
+                                  model_key: str, save_plot: bool = True) -> go.Figure:
+        """График анализа переобучения"""
+        if not overfitting_history:
+            return None
+        epochs = [h['epoch'] for h in overfitting_history]
+        train_losses = [h['train_loss'] for h in overfitting_history]
+        val_losses = [h['val_loss'] for h in overfitting_history]
+        overfit_ratios = [h['overfitting_ratio'] for h in overfitting_history]
+        fig = make_subplots(
+            rows=2, cols=1,
+            subplot_titles=["Loss History", "Overfitting Ratio"],
+            vertical_spacing=0.1
+        )
+        # График потерь
+        fig.add_trace(
+            go.Scatter(x=epochs, y=train_losses, name="Train Loss", 
+                       line=dict(color="blue")),
+            row=1, col=1
+        )
+        fig.add_trace(
+            go.Scatter(x=epochs, y=val_losses, name="Val Loss", 
+                       line=dict(color="red")),
+            row=1, col=1
+        )
+        # График коэффициента переобучения
+        fig.add_trace(
+            go.Scatter(x=epochs, y=overfit_ratios, name="Overfit Ratio", 
+                       line=dict(color="orange")),
+             row=2, col=1
+        )
+        # Добавляем пороговую линию
+        fig.add_hline(y=1.5, line_dash="dash", line_color="red", 
+                      annotation_text="Warning Threshold", row=2, col=1)
+        fig.update_layout(
+            title=f"Overfitting Analysis - {model_key}",
+            height=600,
+            template="plotly_white"
+        )
+        if save_plot:
+            file_path = DIRS["plots"] / f"{model_key}_overfitting_analysis.html"
+            fig.write_html(str(file_path))
+        return fig                                                                       

@@ -1,0 +1,24 @@
+{
+    "model_name": "Bitcoin_CNN_LSTM",
+    "architecture": "CNN_LSTM",
+    "training_completed": true,
+    "metrics": {
+        "MSE": 1200396737.3063421,
+        "RMSE": 34646.74208791271,
+        "NRMSE": 36.80467796417195,
+        "MAE": 32168.99275090144,
+        "R2": -10.085186412913759,
+        "MAPE": 33.56099210912997,
+        "Directional_Accuracy": 49.51456310679612
+    },
+    "creation_date": "2025-06-17T05:17:33.310785",
+    "config": {
+        "type": "CNN_LSTM",
+        "input_shape": [
+            40,
+            62
+        ],
+        "lookback": 40,
+        "features_count": 62
+    }
+}

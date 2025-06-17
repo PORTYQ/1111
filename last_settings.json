@@ -4,8 +4,10 @@
     ],
     "models": [
         "LSTM",
-        "GRU"
+        "GRU",
+        "LSTM_ADVANCED",
+        "CNN_LSTM"
     ],
     "period": "2y",
-    "epochs": 100
+    "epochs": 150
 }

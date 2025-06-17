@@ -1,0 +1,325 @@
+{
+    "timestamp": "20250617_033711",
+    "parameters": {
+        "data_period": "3y",
+        "forecast_days": 7,
+        "epochs": 150
+    },
+    "feature_options": {
+        "use_microstructure": false,
+        "use_sentiment": false,
+        "use_whale": false,
+        "use_regime": false,
+        "use_network": false,
+        "use_cyclical": false,
+        "pca_components": null,
+        "n_features": 100
+    },
+    "results": {
+        "Bitcoin": {
+            "metrics": {
+                "Bitcoin_LSTM": {
+                    "MSE": 408998744.88417834,
+                    "RMSE": 20223.7173853913,
+                    "NRMSE": 21.24613117264002,
+                    "MAE": 19215.524088541668,
+                    "R2": -3.819194022737685,
+                    "MAPE": 20.044390965818224,
+                    "Directional_Accuracy": 49.67741935483871
+                },
+                "Bitcoin_GRU": {
+                    "MSE": 303238072.33441424,
+                    "RMSE": 17413.73229191302,
+                    "NRMSE": 18.29408676104593,
+                    "MAE": 16614.33686398237,
+                    "R2": -2.5730258929629253,
+                    "MAPE": 17.38473027683229,
+                    "Directional_Accuracy": 40.64516129032258
+                },
+                "Bitcoin_LSTM_ADVANCED": {
+                    "MSE": 246215995.17236063,
+                    "RMSE": 15691.271305167107,
+                    "NRMSE": 16.484546439314887,
+                    "MAE": 12649.988005809295,
+                    "R2": -1.9011400819165498,
+                    "MAPE": 13.151137079483682,
+                    "Directional_Accuracy": 49.67741935483871
+                },
+                "Bitcoin_CNN_LSTM": {
+                    "MSE": 2264307730.768844,
+                    "RMSE": 47584.742625854815,
+                    "NRMSE": 49.99039812411149,
+                    "MAE": 46606.084159655446,
+                    "R2": -25.680126573126973,
+                    "MAPE": 48.69595410427111,
+                    "Directional_Accuracy": 46.45161290322581
+                }
+            },
+            "data_info": {
+                "shape": [
+                    1078,
+                    26
+                ],
+                "date_range": [
+                    "2022-07-05 00:00:00",
+                    "2025-06-16 00:00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Log_Close",
+                    "Log_Volume",
+                    "Volume",
+                    "HL_Ratio",
+                    "OC_Ratio",
+                    "RSI",
+                    "MACD",
+                    "BB_Width",
+                    "ATR",
+                    "Volume_Ratio",
+                    "Price_Change_3d",
+                    "Macro_DXY_Change",
+                    "Macro_DXY_Change_MA5",
+                    "Macro_Gold_Change",
+                    "Macro_Gold_Change_MA5",
+                    "Macro_VIX_Change",
+                    "Macro_VIX_Change_MA5",
+                    "Macro_TNX_Change",
+                    "Macro_TNX_Change_MA5",
+                    "Macro_SP500_Change",
+                    "Macro_SP500_Change_MA5",
+                    "Day_Sin",
+                    "Day_Cos",
+                    "Month_Sin",
+                    "Month_Cos"
+                ],
+                "price_stats": {
+                    "min": 15787.2841796875,
+                    "max": 111673.28125,
+                    "mean": 50210.96553585923,
+                    "std": 28421.282560783373,
+                    "current": 108011.953125
+                },
+                "correlations": {
+                    "top_positive": {
+                        "Log_Close": 0.9759946257835361,
+                        "ATR": 0.8782351070681205,
+                        "BB_Width": 0.7201948185042405,
+                        "Log_Volume": 0.5244113250785919,
+                        "Volume": 0.5206486321782063
+                    },
+                    "top_negative": {
+                        "Macro_TNX_Change_MA5": -0.08758798788200502,
+                        "Macro_DXY_Change_MA5": -0.0841300823194577,
+                        "Macro_TNX_Change": -0.05118410239006185,
+                        "Macro_DXY_Change": -0.04490578565856082,
+                        "Month_Cos": -0.04131341096324829
+                    }
+                }
+            },
+            "models_used": [
+                "LSTM",
+                "GRU",
+                "LSTM_ADVANCED",
+                "CNN_LSTM"
+            ]
+        },
+        "Ethereum": {
+            "metrics": {
+                "Ethereum_LSTM": {
+                    "MSE": 25746.661492735908,
+                    "RMSE": 160.45766261770083,
+                    "NRMSE": 6.79488997834434,
+                    "MAE": 124.96132562099355,
+                    "R2": 0.905769744914607,
+                    "MAPE": 5.3086393488663575,
+                    "Directional_Accuracy": 49.67741935483871
+                },
+                "Ethereum_GRU": {
+                    "MSE": 37986.479273374345,
+                    "RMSE": 194.9012038787199,
+                    "NRMSE": 8.253468331755867,
+                    "MAE": 143.77591098883212,
+                    "R2": 0.8609732126731864,
+                    "MAPE": 6.164690902255488,
+                    "Directional_Accuracy": 45.806451612903224
+                },
+                "Ethereum_LSTM_ADVANCED": {
+                    "MSE": 243898.19259250382,
+                    "RMSE": 493.8604991214663,
+                    "NRMSE": 20.91347774506594,
+                    "MAE": 414.8152411045172,
+                    "R2": 0.10735654370792169,
+                    "MAPE": 19.153701873874997,
+                    "Directional_Accuracy": 56.12903225806451
+                },
+                "Ethereum_CNN_LSTM": {
+                    "MSE": 154749.42246923156,
+                    "RMSE": 393.38203119770424,
+                    "NRMSE": 16.65852273951267,
+                    "MAE": 325.7791341145833,
+                    "R2": 0.4336322960665374,
+                    "MAPE": 13.90043945431424,
+                    "Directional_Accuracy": 47.096774193548384
+                }
+            },
+            "data_info": {
+                "shape": [
+                    1078,
+                    26
+                ],
+                "date_range": [
+                    "2022-07-05 00:00:00",
+                    "2025-06-16 00:00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Log_Close",
+                    "Log_Volume",
+                    "Volume",
+                    "HL_Ratio",
+                    "OC_Ratio",
+                    "RSI",
+                    "MACD",
+                    "BB_Width",
+                    "ATR",
+                    "Volume_Ratio",
+                    "Price_Change_3d",
+                    "Macro_DXY_Change",
+                    "Macro_DXY_Change_MA5",
+                    "Macro_Gold_Change",
+                    "Macro_Gold_Change_MA5",
+                    "Macro_VIX_Change",
+                    "Macro_VIX_Change_MA5",
+                    "Macro_TNX_Change",
+                    "Macro_TNX_Change_MA5",
+                    "Macro_SP500_Change",
+                    "Macro_SP500_Change_MA5",
+                    "Day_Sin",
+                    "Day_Cos",
+                    "Month_Sin",
+                    "Month_Cos"
+                ],
+                "price_stats": {
+                    "min": 1038.191650390625,
+                    "max": 4066.445068359375,
+                    "mean": 2254.737062471917,
+                    "std": 754.539534131444,
+                    "current": 2641.079345703125
+                },
+                "correlations": {
+                    "top_positive": {
+                        "Log_Close": 0.9878282778092646,
+                        "ATR": 0.7615215832656826,
+                        "BB_Width": 0.5997067372510078,
+                        "Log_Volume": 0.5383685239953304,
+                        "Volume": 0.49874329851629035
+                    },
+                    "top_negative": {
+                        "Macro_TNX_Change_MA5": -0.07522942258576752,
+                        "Month_Cos": -0.07415847372121376,
+                        "Macro_TNX_Change": -0.044693421712080225,
+                        "OC_Ratio": -0.038811635564336505,
+                        "Day_Sin": -0.004395600495135334
+                    }
+                }
+            },
+            "models_used": [
+                "LSTM",
+                "GRU",
+                "LSTM_ADVANCED",
+                "CNN_LSTM"
+            ]
+        },
+        "Binance Coin": {
+            "metrics": {
+                "Binance Coin_LSTM_ADVANCED": {
+                    "MSE": 7753.850444211742,
+                    "RMSE": 88.05595064623255,
+                    "NRMSE": 13.901765892551548,
+                    "MAE": 71.12736619006303,
+                    "R2": -2.350028564575549,
+                    "MAPE": 10.838798610107373,
+                    "Directional_Accuracy": 55.970149253731336
+                },
+                "Binance Coin_TRANSFORMER": {
+                    "MSE": 2154.6896193585735,
+                    "RMSE": 46.41863439782103,
+                    "NRMSE": 7.328306420118781,
+                    "MAE": 37.574959113252206,
+                    "R2": 0.06907260791519565,
+                    "MAPE": 5.965132877061256,
+                    "Directional_Accuracy": 51.11940298507462
+                },
+                "Binance Coin_CNN_LSTM": {
+                    "MSE": 5458.915946933832,
+                    "RMSE": 73.88447703634256,
+                    "NRMSE": 11.664455329990584,
+                    "MAE": 63.39273786013011,
+                    "R2": -1.358508780305013,
+                    "MAPE": 9.827650596598193,
+                    "Directional_Accuracy": 49.62686567164179
+                }
+            },
+            "data_info": {
+                "shape": [
+                    1808,
+                    17
+                ],
+                "date_range": [
+                    "2020-07-05 00:00:00",
+                    "2025-06-16 00:00:00"
+                ],
+                "missing_values": "0",
+                "features": [
+                    "Close",
+                    "Log_Close",
+                    "Log_Volume",
+                    "High",
+                    "Volume",
+                    "HL_Ratio",
+                    "OC_Ratio",
+                    "RSI",
+                    "MACD",
+                    "BB_Width",
+                    "ATR",
+                    "Volume_Ratio",
+                    "Price_Change_3d",
+                    "Day_Sin",
+                    "Day_Cos",
+                    "Month_Sin",
+                    "Month_Cos"
+                ],
+                "price_stats": {
+                    "min": 15.480225563049316,
+                    "max": 750.2726440429688,
+                    "mean": 366.9903963957213,
+                    "std": 191.8099210623963,
+                    "current": 657.7929077148438
+                },
+                "correlations": {
+                    "top_positive": {
+                        "High": 0.9982909597340568,
+                        "Log_Close": 0.8889462772351936,
+                        "Log_Volume": 0.6669230098656329,
+                        "ATR": 0.6128156308536974,
+                        "BB_Width": 0.4616788110727856
+                    },
+                    "top_negative": {
+                        "HL_Ratio": -0.09082923885721582,
+                        "Month_Cos": -0.07573319678123816,
+                        "Volume_Ratio": -0.05167744475234136,
+                        "Price_Change_3d": -0.03429686356034128,
+                        "RSI": -0.005534154552018598
+                    }
+                }
+            },
+            "models_used": [
+                "LSTM_ADVANCED",
+                "TRANSFORMER",
+                "CNN_LSTM"
+            ]
+        }
+    }
+}
